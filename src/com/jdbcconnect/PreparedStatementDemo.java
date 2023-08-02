@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class PreparedStatementDemo {
+public class PreparedStatementDemo extends FetchDetails {
 	
 	static Connection con = null;
 	Statement st;
@@ -15,8 +15,14 @@ public class PreparedStatementDemo {
 	PreparedStatement pst;
 	static Scanner sc = new Scanner(System.in);
 	
+	public PreparedStatementDemo(int a)
+	{
+		super(2);
+	}
+	
 	public PreparedStatementDemo() {
 		// TODO Auto-generated constructor stub
+		
 		con = DatabaseConnection.getconnect();
 		System.out.println("Connection Done...");
 		
@@ -148,9 +154,107 @@ public class PreparedStatementDemo {
 			e.printStackTrace();
 		}
 	}
+	
+	public void insertByResultset()
+	{
+		try 
+		{
+			rs=st.executeQuery("select * from model");
+			rs.moveToInsertRow();
+			
+			System.out.println("Enter Model ID:");
+			int mid = sc.nextInt();
+			System.out.println("Enter Model Name:");
+			String mname = sc.next();
+			System.out.println("Enter Model Cost:");
+			int cost = sc.nextInt();
+			
+			rs.updateInt(1, mid);
+			rs.updateString(2, mname);
+			rs.updateInt(3, cost);
+			rs.insertRow();
+			fetchModelDetails();
+		} 
+		catch (SQLException e) 
+		{
+			System.out.println(e);
+		}
+	}
+	
+	public void deleteByResultset()
+	{
+		try 
+		{
+			rs=st.executeQuery("select * from model");
+			fetchModelDetails();
+			rs.beforeFirst();
+			System.out.println("Enter Model ID To Be Deleted:");
+			int mid = sc.nextInt();
+			
+			while(rs.next())
+			{
+				if(rs.getInt(1)==mid)
+				{
+					rs.deleteRow();
+				}
+			}
+			fetchModelDetails();
+			
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public void updateByResultset()
+	{
+		try 
+		{
+			rs=st.executeQuery("select * from model");
+			fetchModelDetails();
+			rs.beforeFirst();
+			System.out.println("Enter Model ID To Update: ");
+			int mid = sc.nextInt();
+			
+			while(rs.next())
+			{
+				if(rs.getInt(1)==mid)
+				{
+					System.out.println("Model Name: "+rs.getString(2));
+					System.out.println("Old Cost: "+rs.getInt(3));
+					System.out.println("Enter New Cost: ");
+					int mcost = sc.nextInt();
+					rs.updateInt(3, mcost);
+					rs.updateRow();
+				}
+			}
+			fetchModelDetails();
+		} 
+		catch (SQLException e) 
+		{
+			System.out.println(e);
+		}
+	}
 	public static void main(String[] args) {
 		
-		PreparedStatementDemo obj = new PreparedStatementDemo();
+		//PreparedStatementDemo obj = new PreparedStatementDemo();
+		PreparedStatementDemo obj1 = new PreparedStatementDemo(3);
+		
+		int ch;
+		
+		do
+		{
+			System.out.println("1. Insert  By Prepared/n2. Update By Prepared/n3. Delete By Prepared"
+					+ "/n4. Insert  By Resultset/n5. Insert  By Resultse/n6. Insert  By ResultSet/n7. EXIT");
+			
+			
+			ch=sc.nextInt();
+		}while(ch!=7);
+		
 		//obj.InsertModel();
 		//obj.deleteModel();
 		//obj.DeleteModel2();
